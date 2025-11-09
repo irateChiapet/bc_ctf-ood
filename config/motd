@@ -1,0 +1,71 @@
+# 🚩 Welcome to the CTF Challenge! 🚩
+
+**Greetings, Digital Warriors!**
+
+Welcome to our Capture The Flag competition! Whether you're a seasoned security professional or a curious beginner, you're about to embark on an exciting journey through the world of cybersecurity challenges.
+
+## 🎯 What is CTF?
+
+Capture The Flag is a cybersecurity competition where participants solve security-related challenges to find hidden "flags" - typically strings in a specific format like `flag{example_flag_here}`. Each solved challenge earns you points, and the goal is to capture as many flags as possible!
+
+## 📋 Competition Rules
+
+### ✅ **DO:**
+- **Collaborate and Learn**: Share knowledge, help teammates, and learn from each other
+- **Think Creatively**: Approach problems from different angles - sometimes the solution is simpler than you think
+- **Document Your Process**: Keep notes of your methodology for future reference
+- **Ask Questions**: Our organizers and mentors are here to help guide you
+- **Have Fun**: Remember, this is about learning and growing your skills!
+
+### ❌ **DON'T:**
+- **Share Flags Directly**: Help others learn the process, but don't give away answers
+- **Attack Infrastructure**: Only work on designated challenge systems
+- **Use Automated Tools Excessively**: Focus on understanding concepts, not just tool usage
+- **Give Up Too Easily**: Some challenges require patience and persistence
+
+## 🏆 Scoring System
+
+- **Easy Challenges**: 100-200 points
+- **Medium Challenges**: 300-500 points  
+- **Hard Challenges**: 600-1000 points
+- **Bonus Points**: Available for creative solutions and detailed write-ups
+
+## 🛠️ Challenge Categories
+
+**Web Exploitation** - Find vulnerabilities in web applications  
+**Cryptography** - Break codes and encryption schemes  
+**Reverse Engineering** - Analyze and understand compiled programs  
+**Forensics** - Investigate digital evidence and artifacts  
+**Binary Exploitation** - Exploit memory corruption vulnerabilities  
+**OSINT** - Gather intelligence from open sources  
+**Miscellaneous** - Creative challenges that don't fit other categories
+
+## 🚀 Getting Started
+
+1. **Browse the Challenge Board**: Start with challenges marked "Beginner Friendly"
+2. **Set Up Your Environment**: Ensure you have the necessary tools installed
+3. **Join the Discussion**: Connect with other participants in our chat channels
+4. **Submit Your First Flag**: Follow the submission format exactly as shown
+5. **Celebrate Small Wins**: Every solved challenge is progress!
+
+## 🎉 Competition Timeline
+
+**Start**: [Competition Start Date/Time]  
+**End**: [Competition End Date/Time]  
+**Duration**: [Total Duration]
+
+## 📞 Need Help?
+
+- **Technical Issues**: Contact `admin@ctf-event.com`
+- **Rule Questions**: Ask in `#rules-questions` channel
+- **Hints Available**: Check challenge descriptions for hint systems
+- **Mental Health**: Take breaks! CTF should be challenging but enjoyable
+
+---
+
+**Remember**: The real treasure isn't just the flags you capture, but the skills you develop and the connections you make along the way. 
+
+**Good luck, and may your exploits be successful!** 🎊
+
+*Happy Hacking,*  
+*The CTF Organizing Team*

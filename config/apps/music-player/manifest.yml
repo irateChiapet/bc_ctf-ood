@@ -1,0 +1,7 @@
+---
+name: Music Player
+category: Tools
+subcategory: Media
+description: |
+  A web-based music player for listening to audio files while working on the cluster.
+  Supports MP3, WAV, and OGG audio formats.

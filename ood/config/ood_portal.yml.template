@@ -1,0 +1,51 @@
+servername: ${HOSTNAME}
+
+ssl:
+  - 'SSLEngine On'
+  - 'SSLCertificateFile /etc/ssl/certs/ood.crt'
+  - 'SSLCertificateKeyFile /etc/ssl/private/ood.key'
+  - 'SSLProtocol all -SSLv2 -SSLv3'
+
+# OIDC Configuration for Keycloak over SSL
+oidc_uri: '/oidc'
+oidc_provider_metadata_url: 'https://${HOSTNAME}:8443/realms/ondemand/.well-known/openid-configuration'
+oidc_client_id: 'ondemand'
+oidc_client_secret: '${OIDC_CLIENT_SECRET}'
+oidc_remote_user_claim: 'preferred_username'
+oidc_scope: 'openid profile email'
+oidc_session_inactivity_timeout: 28800
+oidc_session_max_duration: 28800
+oidc_state_max_number_of_cookies: 10
+oidc_crypto_passphrase: '${OIDC_CRYPTO_PASSPHRASE}'
+
+logout_url: 'https://${HOSTNAME}:8443/realms/ondemand/protocol/openid-connect/logout'
+logout_redirect: 'https://${HOSTNAME}/pun/sys/dashboard'
+
+# SSL settings for OIDC
+oidc_settings:
+  OIDCSSLValidateServer: 'Off'
+  OIDCHTTPTimeoutShort: '10'
+  OIDCHTTPTimeoutLong: '60'
+
+# Authentication
+auth:
+  - 'AuthType openid-connect'
+  - 'Require valid-user'
+
+user_env: 'REMOTE_USER'
+# Use simple regex mapping instead of missing script
+user_map_match: '(.+)'
+
+# HTTP to HTTPS redirect
+httpd_extra:
+  - |
+    <VirtualHost *:80>
+        ServerName ${HOSTNAME}
+        Redirect permanent / https://${HOSTNAME}/
+    </VirtualHost>
+    
+    # Security headers
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection "1; mode=block"

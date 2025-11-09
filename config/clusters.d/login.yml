@@ -1,0 +1,12 @@
+---
+v2:
+  metadata:
+    title: "Login Node"
+  login:
+    host: "10.11.12.10"
+  job:
+    adapter: "linux_host"
+    host: "10.11.12.10"
+    submit_host: "10.11.12.10"
+  cluster:
+    - host: "10.11.12.10"

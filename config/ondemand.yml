@@ -1,0 +1,49 @@
+# Open OnDemand Branding Configuration
+# Based on: https://osc.github.io/ood-documentation/latest/reference/files/ondemand-d-ymls.html
+
+# Change dashboard title
+dashboard_title: "Your Custom Portal"
+
+# Main navigation logo (appears in navbar)
+dashboard_header_img_logo: "/public/custom/logo.svg"
+
+# Homepage welcome message logo
+dashboard_logo: "/public/custom/logo.svg"
+dashboard_logo_height: "60px"
+
+# Navbar color customization
+brand_bg_color: "#2c3e50"          # Navy blue navbar background
+navbar_type: "dark"                 # Use dark theme
+
+# Add custom CSS files for advanced styling
+custom_css_files:
+  - "/public/custom/custom-branding.css"
+
+# Optional: Custom favicon
+# Place favicon.ico in /var/www/ood/public/favicon.ico
+
+# Dashboard layout configuration
+dashboard_layout:
+  rows:
+    - columns:
+        - width: 8
+          widgets:
+            - pinned_apps
+            - recently_used_apps
+        - width: 4
+          widgets:
+            - motd
+            - sessions
+
+# Pinned apps configuration - pin existing system apps
+pinned_apps:
+  - sys/shell           # Terminal/SSH access
+  - sys/files           # File manager
+  - sys/myjobs          # Job management
+  - sys/bc_desktop      # Remote desktop sessions
+  - sys/activejobs      # Active job monitoring
+  - sys/file-editor     # File editor
+  - usr/music-player    # Music player app
+
+# Pinned apps menu configuration
+pinned_apps_menu_length: 8

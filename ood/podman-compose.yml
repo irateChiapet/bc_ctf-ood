@@ -1,0 +1,90 @@
+version: '3.8'
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0
+    container_name: ood-keycloak
+    environment:
+      - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN}
+      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
+      - KC_DB=dev-file
+      - KC_HOSTNAME=${HOSTNAME}
+      - KC_HTTP_ENABLED=false
+      - KC_HTTPS_PORT=8443
+      - KC_HOSTNAME_STRICT=false
+      - KC_HEALTH_ENABLED=true
+      - HOSTNAME=${HOSTNAME}
+      - OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET}
+    ports:
+      - "8443:8443"
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+      - ./keycloak/realm-import.json.template:/opt/keycloak/data/import/realm-import.json.template:ro
+      - ./docker/init-keycloak.sh:/opt/keycloak/bin/init-keycloak.sh:ro
+      - ./docker/add-users-keycloak.sh:/opt/keycloak/bin/add-users-keycloak.sh:ro
+      - ./templates:/opt/keycloak/templates:ro
+      - ./ssl/keycloak.crt:/opt/keycloak/conf/server.crt.pem:ro
+      - ./ssl/keycloak.key:/opt/keycloak/conf/server.key.pem:ro
+      - keycloak_passwords:/root:rw
+    entrypoint: ["/bin/bash", "/opt/keycloak/bin/init-keycloak.sh"]
+    user: "0"
+    networks:
+      - ood-network
+
+  ondemand:
+    build:
+      context: .
+      dockerfile: Dockerfile.ood
+    image: ood-with-keycloak:latest
+    container_name: ood-app
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/ood_portal.yml.template:/etc/ood/config/ood_portal.yml.template:ro
+      - ./config/clusters.d:/etc/ood/config/clusters.d:rw
+      - ./config/shell_config.env:/var/www/ood/apps/sys/shell/.env.local:ro
+      - ./templates/passwd:/tmp/template_passwd:ro
+      - ./templates/shadow:/tmp/template_shadow:ro
+      - ./templates/group:/tmp/template_group:ro
+      - ./docker/setup-users-ood.sh:/usr/local/bin/setup-users-ood.sh:ro
+      - ./docker/setup-ssh.sh:/usr/local/bin/setup-ssh.sh:ro
+      - ./ssl/ood.crt:/etc/ssl/certs/ood.crt:ro
+      - ./ssl/ood.key:/etc/ssl/private/ood.key:ro
+      - type: bind
+        source: /p/home
+        target: /p/home
+        bind:
+          propagation: rshared
+      - ood_data:/var/lib/ondemand
+      - ood_logs:/var/log/ondemand
+      - keycloak_passwords:/mnt/keycloak_passwords:ro
+    networks:
+      - ood-network
+    environment:
+      - OOD_PORTAL_GENERATOR=true
+      - HOSTNAME=${HOSTNAME}
+      - OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET}
+      - OIDC_CRYPTO_PASSPHRASE=${OIDC_CRYPTO_PASSPHRASE}
+    entrypoint: ["/bin/bash", "-c", "/usr/local/bin/setup-users-ood.sh && exec /usr/sbin/httpd -DFOREGROUND"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -k -f https://localhost/public/favicon.ico || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  keycloak_data:
+    driver: local
+  keycloak_passwords:
+    driver: local
+  ood_data:
+    driver: local
+  ood_logs:
+    driver: local
+
+networks:
+  ood-network:
+    driver: bridge

@@ -1,0 +1,51 @@
+FROM rockylinux/rockylinux:9
+LABEL maintainer="OpenOnDemand with Keycloak integration"
+
+# Install required packages including development tools for shell app
+RUN dnf -y update && \
+    dnf install -y dnf-utils epel-release && \
+    dnf install -y httpd mod_ssl mod_auth_openidc wget openssl sudo procps-ng gettext && \
+    dnf module enable -y ruby:3.3 nodejs:20 && \
+    dnf install -y gcc-c++ make python3-devel && \
+    dnf clean all && rm -rf /var/cache/dnf/*
+
+# Setup the ondemand repositories
+RUN dnf -y install https://yum.osc.edu/ondemand/4.0/ondemand-release-web-4.0-1.el9.noarch.rpm
+
+# Install OnDemand
+RUN dnf install -y ondemand && \
+    dnf clean all && rm -rf /var/cache/dnf/*
+
+# Generate SSL certificates
+RUN /usr/libexec/httpd-ssl-gencerts
+
+# Create necessary directories and set permissions
+RUN mkdir -p /etc/ood/config/clusters.d && \
+    mkdir -p /var/log/ondemand && \
+    mkdir -p /var/lib/ondemand && \
+    mkdir -p /var/run/ondemand-nginx && \
+    chmod 755 /var/run/ondemand-nginx && \
+    chmod 755 /etc/ood/config/clusters.d
+
+# Create default users for testing
+RUN useradd -m -s /bin/bash testuser1 && \
+    useradd -m -s /bin/bash testuser2 && \
+    useradd -m -s /bin/bash admin
+
+# Configure sudo for nginx_stage
+RUN echo "apache ALL=(ALL) NOPASSWD: /opt/ood/nginx_stage/sbin/nginx_stage" >> /etc/sudoers
+
+# Copy shell setup script
+COPY docker/setup-shell.sh /usr/local/bin/setup-shell.sh
+RUN chmod +x /usr/local/bin/setup-shell.sh
+
+# Build shell app with proper dependencies
+RUN /usr/local/bin/setup-shell.sh
+
+# Copy startup script
+COPY docker/start-ondemand.sh /usr/local/bin/start-ondemand.sh
+RUN chmod +x /usr/local/bin/start-ondemand.sh
+
+EXPOSE 80 443
+
+CMD ["/usr/local/bin/start-ondemand.sh"]

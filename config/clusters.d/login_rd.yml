@@ -1,0 +1,31 @@
+---
+v2:
+  metadata:
+    title: "Remote Desktop"
+    url: "http://ood.hpc.local"
+    hidden: false
+  login:
+    host: "10.11.12.10"
+  job:
+    adapter: "linux_host"
+    submit_host: "ood.hpc.local"
+    ssh_hosts:
+      - ood.hpc.local
+    site_timeout: 7200
+    debug: true
+    singularity_bin: /usr/bin/singularity
+    singularity_bindpath: /etc,/media,/mnt,/opt,/run,/srv,/usr,/var
+    singularity_image: /opt/ood/linux_host_adapter.sif
+    tmux_bin: /usr/bin/tmux
+    set_host: "host=$(hostname -A | awk '{print $1}')"
+  batch_connect:
+    basic:
+      script_wrapper: |
+        module restore
+        %s
+    vnc:
+      script_wrapper: |
+        module restore
+        export PATH="/opt/TurboVNC/bin:$PATH"
+        export WEBSOCKIFY_CMD="/opt/websockify/run"
+        %s

@@ -1,0 +1,213 @@
+{
+  "realm": "ondemand",
+  "enabled": true,
+  "displayName": "OpenOnDemand",
+  "displayNameHtml": "<strong>OpenOnDemand</strong>",
+  "registrationAllowed": false,
+  "registrationEmailAsUsername": false,
+  "editUsernameAllowed": false,
+  "resetPasswordAllowed": true,
+  "rememberMe": true,
+  "verifyEmail": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "sslRequired": "external",
+  "loginTheme": "ondemand-theme",
+  "adminTheme": "keycloak",
+  "emailTheme": "keycloak",
+  "accountTheme": "keycloak",
+  "internationalizationEnabled": false,
+  "supportedLocales": ["en"],
+  "defaultLocale": "en",
+  "browserFlow": "browser",
+  "directGrantFlow": "direct grant",
+  "clients": [
+    {
+      "clientId": "ondemand",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "clientAuthenticatorType": "client-secret",
+      "secret": "${OIDC_CLIENT_SECRET}",
+      "redirectUris": [
+        "https://${HOSTNAME}/oidc",
+        "https://${HOSTNAME}/oidc",
+        "https://${HOSTNAME}/oidc",
+        "https://${HOSTNAME}:${OOD_HTTPS_PORT}/oidc",
+        "https://${HOSTNAME}/oidc/redirect_uri",
+        "https://${HOSTNAME}/oidc/redirect_uri",
+        "https://${HOSTNAME}/oidc/redirect_uri",
+        "https://${HOSTNAME}:${OOD_HTTPS_PORT}/oidc/redirect_uri"
+      ],
+      "webOrigins": [
+        "https://${HOSTNAME}",
+        "https://${HOSTNAME}",
+        "https://${HOSTNAME}",
+        "https://${HOSTNAME}:${OOD_HTTPS_PORT}"
+      ],
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "publicClient": false,
+      "frontchannelLogout": true,
+      "attributes": {
+        "saml.assertion.signature": "false",
+        "saml.force.post.binding": "false",
+        "saml.multivalued.roles": "false",
+        "saml.encrypt": "false",
+        "saml.server.signature": "false",
+        "saml.server.signature.keyinfo.ext": "false",
+        "exclude.session.state.from.auth.response": "false",
+        "saml_force_name_id_format": "false",
+        "saml.client.signature": "false",
+        "tls.client.certificate.bound.access.tokens": "false",
+        "saml.authnstatement": "false",
+        "display.on.consent.screen": "false",
+        "saml.onetimeuse.condition": "false",
+        "post.logout.redirect.uris": "https://${HOSTNAME}/pun/sys/dashboard##https://${HOSTNAME}/##https://${HOSTNAME}:${OOD_HTTPS_PORT}/pun/sys/dashboard##https://${HOSTNAME}:${OOD_HTTPS_PORT}/"
+      },
+      "protocolMappers": [
+        {
+          "name": "username",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "username",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "preferred_username",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "email",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "email",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "email",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "given name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "firstName",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "given_name",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "family name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "lastName",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "family_name",
+            "jsonType.label": "String"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "testuser1",
+      "enabled": true,
+      "firstName": "Test",
+      "lastName": "User1",
+      "email": "testuser1@example.com",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["default-roles-ondemand"],
+      "groups": []
+    },
+    {
+      "username": "testuser2",
+      "enabled": true,
+      "firstName": "Test",
+      "lastName": "User2", 
+      "email": "testuser2@example.com",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["default-roles-ondemand"],
+      "groups": []
+    },
+    {
+      "username": "admin",
+      "enabled": true,
+      "firstName": "Admin",
+      "lastName": "User",
+      "email": "admin@example.com",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["default-roles-ondemand"],
+      "groups": []
+    }
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "default-roles-ondemand",
+        "description": "Default role for OnDemand users",
+        "composite": true,
+        "composites": {
+          "realm": ["offline_access"]
+        }
+      }
+    ]
+  },
+  "groups": [],
+  "scopeMappings": [],
+  "clientScopeMappings": {},
+  "defaultRoles": ["default-roles-ondemand"],
+  "requiredActions": [],
+  "browserSecurityHeaders": {
+    "contentSecurityPolicyReportOnly": "",
+    "xContentTypeOptions": "nosniff",
+    "xRobotsTag": "none",
+    "xFrameOptions": "SAMEORIGIN",
+    "contentSecurityPolicy": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';",
+    "xXSSProtection": "1; mode=block",
+    "strictTransportSecurity": "max-age=31536000; includeSubDomains"
+  },
+  "smtpServer": {},
+  "loginTheme": "ondemand-theme",
+  "accountTheme": "keycloak",
+  "adminTheme": "keycloak",
+  "emailTheme": "keycloak"
+}
