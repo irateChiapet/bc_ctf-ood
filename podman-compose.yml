@@ -55,6 +55,9 @@ services:
       - ./config/shell_config.env:/var/www/ood/apps/sys/shell/.env.local:ro
       - ./config/apps:/var/www/ood/apps/usr:ro
       - ./config/motd:/etc/motd:ro
+      - ./config/apps/news_bulletin/views/_news_bulletin.html.erb:/etc/ood/config/apps/dashboard/views/widgets/_news_bulletin.erb
+      - ./config/apps/news/views/_news.html.erb:/etc/ood/config/apps/dashboard/views/widgets/_news.erb
+      - ./config/apps/bulletin_board/views/_bulletin_board.html.erb:/etc/ood/config/apps/dashboard/views/widgets/_bulletin_board.html.erb
       - ./templates/passwd:/tmp/template_passwd:ro
       - ./templates/shadow:/tmp/template_shadow:ro
       - ./templates/group:/tmp/template_group:ro

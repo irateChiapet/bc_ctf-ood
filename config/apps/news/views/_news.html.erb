@@ -1,0 +1,331 @@
+<style>
+  /* === Announcement widget minimal CSS === */
+
+  /* Header / title / action button */
+  .widget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #222;
+  }
+  .widget-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .widget-action {
+    font-size: 1rem;
+    padding: 0.2rem 0.8rem;
+    border: none;
+    background: white;
+    border-radius: 999px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  /* "View all" link/button */
+  .announcement-viewall {
+    font-size: 0.75rem;
+    background: #f0f9ff;
+    border: 1px solid #cce5ff;
+    color: #007bff;
+    padding: 0.2rem 0.75rem;
+    border-radius: 999px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  /* Timestamp line above widget */
+  .last-updated {
+    font-size: 0.75rem;
+    color: #666;
+    margin-top: -0.5rem;
+  }
+
+  /* Announcement card container */
+  .announcement-container {
+    font-family: system-ui, sans-serif;
+    color: #111;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 1rem;
+    background: #f9fafa;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  /* Title / topic */
+  .announcement-topic {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #111;
+    margin-bottom: 0.25rem;
+  }
+  .announcement-link {
+    color: #000;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .announcement-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Metadata row: badge + time */
+  .announcement-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    color: #555;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Badge variants */
+  .announcement-badge {
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 999px;
+    display: inline-block;
+  }
+  .announcement-badge.info {
+    background-color: #e6f1fd;
+    color: #007bff;
+  }
+  .announcement-badge.alert {
+    background-color: #fdecea;
+    color: #d32f2f;
+  }
+  .announcement-badge.maintenance {
+    background-color: #fff4e5;
+    color: #ff9800;
+  }
+
+  /* Relative time text */
+  .announcement-time {
+    font-size: 0.8rem;
+    color: #666;
+  }
+
+  /* Body content with contextual border */
+  .announcement-body {
+    margin-top: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-left: 3px solid #007bff;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    color: #222;
+    line-height: 1.5;
+    background: #fff;
+  }
+  .announcement-body.alert {
+    border-left-color: #d32f2f;
+  }
+  .announcement-body.maintenance {
+    border-left-color: #ff9800;
+  }
+
+  /* Fallback / empty state */
+  .no-jobs-msg {
+    padding: 1rem;
+    background: #fff;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    text-align: center;
+    color: #555;
+  }
+</style>
+
+<div class="widget-header">
+  <div class="widget-title">
+    <!-- Icon + title for the announcements widget -->
+    <i class="fas fa-bullhorn"></i>
+    <span>Announcements</span>
+    <!-- "View All" link: links to internal announcements -->
+    <a class="announcement-viewall" href="#" onclick="showAllPosts(event)">
+      <i class="fas fa-newspaper"></i> View All
+    </a>
+  </div>
+  <div style="display: flex; gap: 0.5rem; align-items: center;">
+    <!-- Manual refresh control -->
+    <button id="reloadNews" class="widget-action" title="Refresh">
+      <i class="fa fa-rotate-right"></i>
+    </button>
+  </div>
+</div>
+<!-- Timestamp area; shows last-fetched time -->
+<div id="news-timestamp" class="last-updated"></div>
+<!-- Container where the parsed announcement will be injected -->
+<div id="news-widget"></div>
+
+<script>
+// Utility: extract HTML between two heading boundaries. Stops early if an unexpected <h2> appears.
+function extractTextBetweenElements(startElement, endElement) {
+  let content = [];
+  let current = startElement.nextElementSibling;
+  while (current && current !== endElement && current.tagName !== 'H2') {
+    content.push(current.outerHTML);
+    current = current.nextElementSibling;
+  }
+  return content.join('');
+}
+
+// Compute human-readable relative time from a Date object.
+// This is used to show how old the announcement is.
+function timeSince(date) {
+  const seconds = Math.floor((new Date() - date) / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  const months = Math.floor(days / 30);
+  const years = Math.floor(days / 365);
+
+  if (seconds < 60) return "just now";
+  if (minutes < 60) return `Updated ${minutes} min${minutes !== 1 ? "s" : ""} ago`;
+  if (hours < 24) return `Updated ${hours} hour${hours !== 1 ? "s" : ""} ago`;
+  if (days < 30) return `Updated ${days} day${days !== 1 ? "s" : ""} ago`;
+  if (months < 12) return `Updated ${months} month${months !== 1 ? "s" : ""} ago`;
+  return `Updated ${years} year${years !== 1 ? "s" : ""} ago`;
+}
+
+// Update the small "Last updated:" line above the widget.
+function updateNewsTimestamp() {
+  const tsEl = document.getElementById("news-timestamp");
+  if (tsEl) {
+    const now = new Date();
+    tsEl.textContent = `Last updated: ${now.toLocaleTimeString()}`;
+  }
+}
+
+// Local news posts about MNCC security incident
+const localNewsPosts = [
+  {
+    title: "Critical Security Incident at MNCC - Immediate Action Required",
+    type: "alert",
+    date: new Date(2025, 10, 10), // Nov 10, 2025
+    content: `
+      <p><strong>CRITICAL SECURITY ALERT:</strong> The Meridian National Computing Center (MNCC) has detected unauthorized access to several compute nodes. An active security incident is currently being investigated.</p>
+      <p><strong>Affected Systems:</strong> Compute clusters 1-4, Login nodes 1-2, and select storage systems.</p>
+      <p><strong>Immediate Actions:</strong></p>
+      <ul>
+        <li>All non-essential services have been suspended</li>
+        <li>Firewall rules have been tightened</li>
+        <li>Security team is conducting forensic analysis</li>
+        <li>User sessions will be forcibly terminated for security review</li>
+      </ul>
+      <p><strong>What You Should Do:</strong> Change your MNCC password immediately. Do not access the system until further notice.</p>
+    `
+  },
+  {
+    title: "Security Incident Investigation Update",
+    type: "alert",
+    date: new Date(2025, 10, 11), // Nov 11, 2025
+    content: `
+      <p>The MNCC security team has completed initial forensic analysis of the incident reported on November 10th.</p>
+      <p><strong>Findings:</strong></p>
+      <ul>
+        <li>Unauthorized access occurred between 02:00-06:30 UTC</li>
+        <li>Attackers exploited a previously patched vulnerability in SSH daemon</li>
+        <li>Approximately 47 user accounts were compromised</li>
+        <li>No evidence of data exfiltration at this time (investigation ongoing)</li>
+      </ul>
+      <p><strong>Remediation Steps:</strong></p>
+      <ul>
+        <li>All SSH services have been patched and restarted</li>
+        <li>Compromised accounts have been locked</li>
+        <li>Additional monitoring has been deployed</li>
+      </ul>
+      <p>Status updates will be posted regularly. Check back soon.</p>
+    `
+  }
+];
+
+// Core loader: renders local announcement posts
+function loadFirstNewsItem() {
+  const widget = document.getElementById('news-widget');
+  const refreshBtn = document.getElementById("reloadNews");
+  widget.innerHTML = '';
+  refreshBtn.disabled = true;
+
+  try {
+    // Load the most recent post
+    if (localNewsPosts.length > 0) {
+      const post = localNewsPosts[0];
+      const container = document.createElement('div');
+      container.className = 'announcement-container';
+
+      // Build inner HTML from local post
+      container.innerHTML = `
+        <div class="announcement-topic">
+          <a class="announcement-link" href="#">${post.title}</a>
+        </div>
+        <div class="announcement-meta">
+          <span class="announcement-badge ${post.type}">${post.type.charAt(0).toUpperCase() + post.type.slice(1)}</span>
+          <span class="announcement-time">${timeSince(post.date)}</span>
+        </div>
+        <div class="announcement-body ${post.type}">
+          ${post.content}
+        </div>
+      `;
+
+      widget.appendChild(container);
+    } else {
+      // Fallback if no posts available
+      widget.innerHTML = `<div class="no-jobs-msg">No announcements at this time.</div>`;
+    }
+  } catch (error) {
+    // Log for debugging and show an error message to the user
+    console.error('Error loading announcements:', error);
+    widget.innerHTML = `<div class="no-jobs-msg">Unable to load announcements.</div>`;
+  } finally {
+    updateNewsTimestamp();
+    refreshBtn.disabled = false;
+  }
+}
+
+// Display all posts instead of just the first one
+function showAllPosts(event) {
+  event.preventDefault();
+  const widget = document.getElementById('news-widget');
+  widget.innerHTML = '';
+
+  if (localNewsPosts.length > 0) {
+    localNewsPosts.forEach(post => {
+      const container = document.createElement('div');
+      container.className = 'announcement-container';
+
+      container.innerHTML = `
+        <div class="announcement-topic">
+          <a class="announcement-link" href="#">${post.title}</a>
+        </div>
+        <div class="announcement-meta">
+          <span class="announcement-badge ${post.type}">${post.type.charAt(0).toUpperCase() + post.type.slice(1)}</span>
+          <span class="announcement-time">${timeSince(post.date)}</span>
+        </div>
+        <div class="announcement-body ${post.type}">
+          ${post.content}
+        </div>
+      `;
+
+      widget.appendChild(container);
+    });
+  } else {
+    widget.innerHTML = `<div class="no-jobs-msg">No announcements available.</div>`;
+  }
+}
+
+// Initialize on DOM ready and wire up refresh button.
+document.addEventListener('DOMContentLoaded', () => {
+  const runRefresh = () => loadFirstNewsItem();
+  runRefresh();
+  document.getElementById("reloadNews")?.addEventListener("click", runRefresh);
+});
+</script>

@@ -1,0 +1,8 @@
+---
+name: Bulletin Board
+category: Community
+subcategory: Discussion
+description: |
+  A community bulletin board where authenticated users can post comments and announcements.
+  Users can share updates, ask questions, and communicate with other system users.
+

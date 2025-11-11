@@ -24,7 +24,7 @@ The deployment is configured through a `.env` file. Copy and modify the provided
 
 ```bash
 # Environment configuration for OpenOnDemand with Keycloak
-HOSTNAME=ood.hpc.local
+HOSTNAME=ood.mncc.local
 KEYCLOAK_ADMIN=admin
 KEYCLOAK_ADMIN_PASSWORD=admin123
 KEYCLOAK_HTTP_PORT=8080
@@ -47,7 +47,7 @@ OIDC_CRYPTO_PASSPHRASE=openondemand-crypto-passphrase-change-me
    ```bash
    # Edit the .env file to set your hostname
    vi .env
-   # Change HOSTNAME=ood.hpc.local to HOSTNAME=your.domain.com
+   # Change HOSTNAME=ood.mncc.local to HOSTNAME=your.domain.com
    ```
 
 3. **Build and start the services:**
@@ -112,7 +112,7 @@ The Keycloak realm comes pre-configured with three test users:
 ├── config/
 │   ├── ood_portal.yml.template   # OOD portal configuration template
 │   └── clusters.d/
-│       └── ood.hpc.local.yml         # Local cluster config
+│       └── ood.mncc.local.yml         # Local cluster config
 ├── keycloak/
 │   └── realm-import.json.template # Keycloak realm configuration template
 └── README-podman-keycloak.md     # This documentation
@@ -273,7 +273,7 @@ For production use:
 
 ### Adding Users
 
-1. Access Keycloak admin console: `http://ood.hpc.local:8080/admin`
+1. Access Keycloak admin console: `http://ood.mncc.local:8080/admin`
 2. Login with admin credentials (`admin` / `admin123`)
 3. Navigate to Users → Add User
 4. Set username, email, and other details
@@ -329,7 +329,7 @@ All configuration is managed through the `.env` file. Available variables:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `HOSTNAME` | Deployment hostname | `ood.hpc.local` |
+| `HOSTNAME` | Deployment hostname | `ood.mncc.local` |
 | `KEYCLOAK_ADMIN` | Keycloak admin username | `admin` |
 | `KEYCLOAK_ADMIN_PASSWORD` | Keycloak admin password | `admin123` |
 | `KEYCLOAK_HTTP_PORT` | Keycloak HTTP port | `8080` |

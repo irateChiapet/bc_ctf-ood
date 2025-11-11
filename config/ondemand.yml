@@ -17,7 +17,7 @@ navbar_type: "dark"                 # Use dark theme
 
 # Add custom CSS files for advanced styling
 custom_css_files:
-  - "/public/custom/custom-branding.css"
+  - "/custom/custom-branding.css"
 
 # Optional: Custom favicon
 # Place favicon.ico in /var/www/ood/public/favicon.ico
@@ -30,9 +30,10 @@ dashboard_layout:
           widgets:
             - pinned_apps
             - recently_used_apps
-        - width: 4
+        - width: 12
           widgets:
             - motd
+            - news_bulletin
             - sessions
 
 # Pinned apps configuration - pin existing system apps
@@ -43,7 +44,7 @@ pinned_apps:
   - sys/bc_desktop      # Remote desktop sessions
   - sys/activejobs      # Active job monitoring
   - sys/file-editor     # File editor
-  - usr/music-player    # Music player app
+  - sys/music-player    # Music player app
 
 # Pinned apps menu configuration
 pinned_apps_menu_length: 8

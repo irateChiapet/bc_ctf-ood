@@ -78,7 +78,7 @@ if [ -f /opt/keycloak/templates/passwd ]; then
         fi
         
         # Set email
-        email="${username}@${HOSTNAME:-ood.hpc.local}"
+        email="${username}@${HOSTNAME:-ood.mncc.local}"
         
         echo "Processing user: $username ($firstname $lastname) - $jobtitle"
 

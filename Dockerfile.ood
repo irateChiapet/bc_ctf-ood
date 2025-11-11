@@ -3,10 +3,10 @@ LABEL maintainer="OpenOnDemand with Keycloak integration"
 
 # Install required packages including development tools for shell app
 RUN dnf -y update && \
-    dnf install -y dnf-utils epel-release && \
-    dnf install -y httpd mod_ssl mod_auth_openidc wget openssl sudo procps-ng gettext && \
+    dnf install -y --nobest dnf-utils epel-release && \
+    dnf install -y --nobest httpd mod_ssl mod_auth_openidc wget openssl sudo procps-ng gettext && \
     dnf module enable -y ruby:3.3 nodejs:20 && \
-    dnf install -y gcc-c++ make python3-devel && \
+    dnf install -y --nobest gcc-c++ make python3-devel && \
     dnf clean all && rm -rf /var/cache/dnf/*
 
 # Setup the ondemand repositories
@@ -45,6 +45,10 @@ RUN /usr/local/bin/setup-shell.sh
 # Copy startup script
 COPY docker/start-ondemand.sh /usr/local/bin/start-ondemand.sh
 RUN chmod +x /usr/local/bin/start-ondemand.sh
+
+# Copy news widget to dashboard widgets directory
+RUN mkdir -p /etc/ood/config/apps/dashboard/views/widgets
+COPY config/apps/news/views/_news.html.erb /etc/ood/config/apps/dashboard/views/widgets/_news.html.erb
 
 EXPOSE 80 443
 

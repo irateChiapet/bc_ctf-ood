@@ -1,0 +1,7 @@
+---
+name: News Widget
+category: Information
+subcategory: Announcements
+description: |
+  A news and announcements widget that displays the latest system announcements
+  and maintenance notifications. Fetches announcements from your HPC documentation site.
